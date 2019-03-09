@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- configuration:配置 scan设置为true，那么配置文件被更改，将会被重新加载，有scan就会有scanPeriod scanPeriod是设置检测配置文件是否有修改时间的时间间隔，没有给出单位默认为毫秒 
+	debug设置为true将打印出logback内部的日志信息，但不需要，因为logback已经很稳定了 -->
+<configuration scan="true" scanPeriod="60 seconds"
+	debug="false">
+	<!-- 定义参数常量 -->
+	<!-- logback级别：TRACE<DEBUG<INFO<WARN<ERROR -->
+	<!-- new出一个logger实例 logger.trace("msg") logger.debug.... -->
+	<property name="log.level" value="debug" />
+	<property name="log.maxHistory" value="30" />
+
+	<!-- filePath日志存储根路径 catalina.base存储的是tomcat实例的根目录 -->
+	<property name="log.filePath"
+		value="${catalina.base}/logs/webapps" />
+
+	<!-- log.pattern日志展现的格式 [%thead]哪一个线程执行 哪一个级别的日志 输出哪个package下面哪个类下面的信息 %n换行 -->
+	<property name="log.pattern"
+		value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thead] %-5level %logger{50} - %msg%n" />
+
+	<!-- appender告诉我们输出介质是什么，我们要将日志输出到哪个地方 consoleAppender执行程序时候eclipse里面的console在里面输出程序的日志信息 -->
+	<!-- 控制台设置 -->
+	<appender name="consoleAppender"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoder类似于layout（将invent事件转换为一个字符串） encoder不仅将invent事件转换成一组byte数组，还会将转换后的字节数据输出到文件中 -->
+		<encoder>
+			<pattern>${log.pattern}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- DEBUG RollingFileAppender文件会随着size增大滚动出新的日志文件来 -->
+	<appender name="debugAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 文件路径 -->
+		<file>${log.filePath/debug.log}</file>
+		<!-- 滚动策略 -->
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 文件名称 -->
+			<fileNamePattern>${log.filePath}/debug/debug.%d{yyyy-MM-dd}.log.gz
+			</fileNamePattern>
+			<!-- 文件最大保存历史数量 -->
+			<MaxHistory>${log.maxHistory}</MaxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${log.pattern}</pattern>
+		</encoder>
+		<!-- filter过滤器 过滤掉不是debug等级的日志，只记录debug级别的日志 -->
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<!-- INFO RollingFileAppender文件会随着size增大滚动出新的日志文件来 -->
+	<appender name="infoAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 文件路径 -->
+		<file>${log.filePath/info.log}</file>
+		<!-- 滚动策略 -->
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 文件名称 -->
+			<fileNamePattern>${log.filePath}/info/info.%d{yyyy-MM-dd}.log.gz
+			</fileNamePattern>
+			<!-- 文件最大保存历史数量 -->
+			<MaxHistory>${log.maxHistory}</MaxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${log.pattern}</pattern>
+		</encoder>
+		<!-- filter过滤器 过滤掉不是info等级的日志，只记录info级别的日志 -->
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<!-- ERROR RollingFileAppender文件会随着size增大滚动出新的日志文件来 -->
+	<appender name="errorAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 文件路径 -->
+		<file>${log.filePath/error.log}</file>
+		<!-- 滚动策略 -->
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 文件名称 -->
+			<fileNamePattern>${log.filePath}/error/error.%d{yyyy-MM-dd}.log.gz
+			</fileNamePattern>
+			<!-- 文件最大保存历史数量 -->
+			<MaxHistory>${log.maxHistory}</MaxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${log.pattern}</pattern>
+		</encoder>
+		<!-- filter过滤器 过滤掉不是info等级的日志，只记录info级别的日志 -->
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	
+	<!-- logger用来存放日志对象，同时告诉logback关注哪个package下面的信息 name指定关注哪个package  level告诉logback仅记录哪个等级以上的信息-->
+	<!-- additivity为true的话那么logger的父类root里面的ref也会加到logger里面 -->
+	<logger name="com.lxk.o2o" level="${log.level}" additivity="true">
+		<!-- logger需要和appender进行绑定 -->
+		<appender-ref ref="debugAppender"/>
+		<appender-ref ref="infoAppender"/>
+		<appender-ref ref="errorAppender"/>
+	</logger>
+	<!-- 跟root相关的日志信息会打印到控制台 -->
+	<root level="info">
+		<appender-ref ref="consoleAppender"/>
+	</root>
+</configuration>
