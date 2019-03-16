@@ -2,6 +2,7 @@ package com.lxk.o2o.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
@@ -13,6 +14,7 @@ import com.lxk.o2o.entity.PersonInfo;
 import com.lxk.o2o.entity.Shop;
 import com.lxk.o2o.entity.ShopCategory;
 import com.lxk.o2o.enums.ShopStateEnum;
+import com.lxk.o2o.exceptions.ShopOperationException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -23,6 +25,29 @@ import static org.junit.Assert.assertEquals;
 public class ShopServiceTest extends BaseTest {
 	@Autowired
 	private ShopService shopService;
+
+	@Test
+	public void testGetShopList(){
+		Shop shopCondition = new Shop();
+		ShopCategory sc = new ShopCategory();
+		sc.setShopCategoryId(1L);
+		shopCondition.setShopCategory(sc);
+		ShopExecution se = shopService.getShopList(shopCondition, 2, 2);
+		System.out.println("店铺列表数为:"+se.getShopList().size());
+		System.out.println("店铺总数为:"+se.getCount());
+
+	}
+
+	@Test
+	public void testModifyShop() throws ShopOperationException, FileNotFoundException{
+		Shop shop = shopService.getByShopId(7L);
+		shop.setShopName("修改后的综合教学楼");
+		File shopImgFile = new File("/Volumes/LXK/SSM_Shop/o2o/src/main/resources/dabai.jpeg");
+		InputStream inputStream = new FileInputStream(shopImgFile);
+		ShopExecution shopExecution = shopService.modifyShop(shop, inputStream, shopImgFile.getName());
+		System.out.println("新的图片地址:"+shopExecution.getShop().getShopImg());
+
+	}
 
 	@Test
 	public void testAddShop() throws Exception {

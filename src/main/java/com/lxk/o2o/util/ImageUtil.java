@@ -89,4 +89,27 @@ public class ImageUtil{
                 .size(160,160).watermark(Positions.BOTTOM_RIGHT, ImageIO.read(new File("/Volumes/资料/SSM校园商铺/o2o/src/main/resources/watermark.jpg")),0.25f).outputQuality(0.8f)
                 .toFile("/Volumes/资料/SSM校园商铺/o2o/src/main/resources/xiaohuangrenw.jpeg");
     }
+
+    /**
+     * storePath是文件路径还是目录路径，
+     * 如果是文件路径则删除该文件，
+     * 如果是目录路径则删除该文件目录下的所有文件
+     * @param storePath
+     */
+    public static void deleteFileOrPath(String storePath){
+        File fileOrPath = new File(PathUtil.getImgBasePath()+storePath);
+        //如果存在
+        if (fileOrPath.exists()){
+            //如果是目录
+            if (fileOrPath.isDirectory()){
+                //将下面文件list出来递归删除
+                File files[] = fileOrPath.listFiles();
+                for (int i = 0;i<files.length;i++){
+                    files[i].delete();
+                }
+            }
+            //如果是文件则直接删除
+            fileOrPath.delete();
+        }
+    }
 }
