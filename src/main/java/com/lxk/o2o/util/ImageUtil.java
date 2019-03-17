@@ -1,5 +1,6 @@
 package com.lxk.o2o.util;
 
+import com.lxk.o2o.dto.ImageHolder;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -19,12 +20,14 @@ public class ImageUtil{
     private static final SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
     //随机数对象
     private static final Random r = new Random();
+
+
     //处理用户传送过来的文件 CommonsMultipartFile：Spring自带的文件处理对象
-    public static String generateThumbnail(InputStream thumbnailInputStream,String fileName, String targetAddr){
+    public static String generateThumbnail(ImageHolder thumbnail, String targetAddr){
         //系统随机生成的不重名的文件名
         String realFileName = getRandomFileName();
         //获取文件名后缀
-        String extension = getFileExtension(fileName);
+        String extension = getFileExtension(thumbnail.getImageName());
         //创建路径目录
         makeDirPath(targetAddr);
         //获取相对路径
@@ -35,9 +38,39 @@ public class ImageUtil{
         try{
             //解决绝对路径里面的中文乱码
             String basePathCH = URLDecoder.decode(basePath,"UTF-8");
-            Thumbnails.of(thumbnailInputStream).size(200,200)
+            Thumbnails.of(thumbnail.getImage()).size(200,200)
             .watermark(Positions.BOTTOM_RIGHT,ImageIO.read(new File(basePathCH+"/watermark.jpg")),0.25f)
             .outputQuality(0.8f).toFile(dest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return relativeAddr;
+    }
+
+    /**
+     * 处理详情图，并返回新生成图片的相对路径
+     * @param thumbnail
+     * @param targetAddr
+     * @return
+     */
+    public static String generateNormalImg(ImageHolder thumbnail, String targetAddr){
+        //系统随机生成的不重名的文件名
+        String realFileName = getRandomFileName();
+        //获取文件名后缀
+        String extension = getFileExtension(thumbnail.getImageName());
+        //创建路径目录
+        makeDirPath(targetAddr);
+        //获取相对路径
+        String relativeAddr = targetAddr+realFileName+extension;
+        //生成文件路径
+        File dest = new File(PathUtil.getImgBasePath()+relativeAddr);
+        //创建缩略图
+        try{
+            //解决绝对路径里面的中文乱码
+            String basePathCH = URLDecoder.decode(basePath,"UTF-8");
+            Thumbnails.of(thumbnail.getImage()).size(337,640)
+                    .watermark(Positions.BOTTOM_RIGHT,ImageIO.read(new File(basePathCH+"/watermark.jpg")),0.25f)
+                    .outputQuality(0.9f).toFile(dest);
         }catch (Exception e){
             e.printStackTrace();
         }

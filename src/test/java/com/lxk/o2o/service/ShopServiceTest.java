@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.lxk.o2o.BaseTest;
+import com.lxk.o2o.dto.ImageHolder;
 import com.lxk.o2o.dto.ShopExecution;
 import com.lxk.o2o.entity.Area;
 import com.lxk.o2o.entity.PersonInfo;
@@ -44,7 +45,8 @@ public class ShopServiceTest extends BaseTest {
 		shop.setShopName("修改后的综合教学楼");
 		File shopImgFile = new File("/Volumes/LXK/SSM_Shop/o2o/src/main/resources/dabai.jpeg");
 		InputStream inputStream = new FileInputStream(shopImgFile);
-		ShopExecution shopExecution = shopService.modifyShop(shop, inputStream, shopImgFile.getName());
+		ImageHolder imageHolder = new ImageHolder(shopImgFile.getName(),inputStream);
+		ShopExecution shopExecution = shopService.modifyShop(shop, imageHolder);
 		System.out.println("新的图片地址:"+shopExecution.getShop().getShopImg());
 
 	}
@@ -71,8 +73,9 @@ public class ShopServiceTest extends BaseTest {
 		shop.setShopCategory(sc);
 		File shopImg = new File("/Volumes/LXK/SSM_Shop/o2o/src/main/resources/xiaohuangren.jpeg");
 		InputStream inputStream = new FileInputStream(shopImg);
-		ShopExecution se = shopService.addShop(shop,inputStream,shopImg.getName());
-		assertEquals(ShopStateEnum.CHECK.getState(), se.getState());
+		ImageHolder imageHolder = new ImageHolder(shopImg.getName(),inputStream);
+		ShopExecution shopExecution = shopService.addShop(shop, imageHolder);
+		assertEquals(ShopStateEnum.CHECK.getState(), shopExecution.getState());
 	}
 
 
