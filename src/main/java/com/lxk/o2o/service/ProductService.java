@@ -20,7 +20,7 @@ public interface ProductService {
 	 * 添加商品信息以及图片处理
 	 * @param product
 	 * @param thumbnail  缩略图
-	 * @param productImgList  详情图
+	 * @param productImgHolderList  详情图
 	 * @return
 	 * @throws ProductOperationException
 	 */
