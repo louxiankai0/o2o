@@ -31,4 +31,18 @@ public class ShopAdminController {
         return "shop/productcategorymanage";//在spring-web.xml里面设置了后缀
     }
 
+    @RequestMapping(value = "/productoperation")
+    //转发
+    public String productOperation() {
+        return "shop/productoperation";//在spring-web.xml里面设置了后缀
+    }
+
+    @RequestMapping(value = "/productmanagement")
+    //转发
+    public String productManageMent() {
+        return "shop/productmanagement";//在spring-web.xml里面设置了后缀
+    }
+
+
+
 }

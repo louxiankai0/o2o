@@ -15,6 +15,7 @@
 		<result column="last_edit_time" property="lastEditTime" />
 		<result column="enable_status" property="enableStatus" />
 		<result column="point" property="point" />
+		<!-- association一一对应 -->
 		<association property="productCategory" column="product_category_id"
 			javaType="com.lxk.o2o.entity.ProductCategory">
 			<id column="product_category_id" property="productCategoryId" />
@@ -41,6 +42,7 @@
 			<result column="enable_status" property="enableStatus" />
 			<result column="advice" property="advice" />
 		</association>
+		<!-- collection一对多 -->
 		<collection property="productImgList" column="product_id"
 			ofType="com.lxk.o2o.entity.ProductImg">
 			<id column="product_img_id" property="productImgId" />
@@ -51,7 +53,8 @@
 			<result column="product_id" property="productId" />
 		</collection>
 	</resultMap>
-	<select id="queryProductList" resultMap="productMap">
+
+	<select id="queryProductList" resultType="com.lxk.o2o.entity.Product">
 		SELECT
 		product_id,
 		product_name,
@@ -63,19 +66,16 @@
 		create_time,
 		last_edit_time,
 		enable_status,
-		point,
 		product_category_id,
 		shop_id
 		FROM
 		tb_product
 		<where>
-			<if
-				test="productCondition.shop!=null
+			<if test="productCondition.shop!=null
 				 and productCondition.shop.shopId!=null">
 				and shop_id = #{productCondition.shop.shopId}
 			</if>
-			<if
-				test="productCondition.productCategory!=null
+			<if test="productCondition.productCategory!=null
 				 and productCondition.productCategory.productCategoryId!=null">
 				and product_category_id =
 				#{productCondition.productCategory.productCategoryId}
@@ -94,16 +94,15 @@
 		LIMIT #{rowIndex},#{pageSize};
 	</select>
 
+	<!-- 计数 -->
 	<select id="queryProductCount" resultType="int">
 		SELECT count(1) FROM tb_product
 		<where>
-			<if
-				test="productCondition.shop!=null
+			<if test="productCondition.shop!=null
 				 and productCondition.shop.shopId!=null">
 				and shop_id = #{productCondition.shop.shopId}
 			</if>
-			<if
-				test="productCondition.productCategory!=null
+			<if test="productCondition.productCategory!=null
 				 and productCondition.productCategory.productCategoryId!=null">
 				and product_category_id =
 				#{productCondition.productCategory.productCategoryId}
@@ -118,6 +117,7 @@
 			</if>
 		</where>
 	</select>
+
 	<select id="queryProductByProductId" resultMap="productMap"
 		parameterType="Long">
 		<!-- 具体的sql -->
@@ -132,24 +132,22 @@
 		p.create_time,
 		p.last_edit_time,
 		p.enable_status,
-		p.point,
 		p.product_category_id,
 		p.shop_id,
 		pm.product_img_id,
-		pm.img_addr,
+		pm.img_addr AS detail_img,
 		pm.img_desc,
 		pm.priority,
 		pm.create_time
 		FROM
 		tb_product p
+		<!-- LEFT JOIN左连接 -->
 		LEFT JOIN
 		tb_product_img pm
 		ON
-		p.product_id =
-		pm.product_id
+		p.product_id = pm.product_id
 		WHERE
-		p.product_id =
-		#{productId}
+		p.product_id = #{productId}
 		ORDER BY
 		pm.priority DESC
 	</select>
@@ -179,16 +177,15 @@
 			<if test="priority != null">priority=#{priority},</if>
 			<if test="lastEditTime != null">last_edit_time=#{lastEditTime},</if>
 			<if test="enableStatus != null">enable_status=#{enableStatus},</if>
-			<if test="point != null">point=#{point},</if>
-			<if
-				test="productCategory != null
-				 and productCategory.productCategoryId != null">
+			<if test="productCategory != null and productCategory.productCategoryId != null">
 				product_category_id=#{productCategory.productCategoryId}
 			</if>
 		</set>
 		WHERE product_id = #{productId}
+		<!-- 需要shopId过滤，确保在当前修改不会修改到别的店铺 -->
 		AND shop_id=#{shop.shopId}
 	</update>
+
 	<update id="updateProductCategoryToNull" parameterType="Long"
 		keyProperty="product_id" useGeneratedKeys="true">
 		UPDATE tb_product

@@ -57,4 +57,35 @@ public class ProductServiceTest extends BaseTest {
         assertEquals(ProductStateEnum.SUCCESS.getState(),pe.getState());
 
     }
+
+    @Test
+    public void testModifyProduct() throws ShopOperationException,FileNotFoundException{
+        //创建shopId=1且productId=1的商品实例
+        Product product = new Product();
+        Shop shop = new Shop();
+        shop.setShopId(1L);
+        ProductCategory pc = new ProductCategory();
+        pc.setProductCategoryId(1L);
+        product.setProductId(8L);
+        product.setShop(shop);
+        product.setProductCategory(pc);
+        product.setProductName("正式的名字");
+        product.setProductDesc("正式的描述");
+        //创建缩略图文件流
+        File thumbnailFile = new File("/Volumes/LXK/SSM_Shop/o2o/src/main/resources/dabai.jpeg");
+        InputStream inputStream = new FileInputStream(thumbnailFile);
+        ImageHolder thumbnail = new ImageHolder(thumbnailFile.getName(),inputStream);
+        //创建两个商品详情图文件流并将他们添加到详情图列表中
+        File productImg1 = new File("/Volumes/LXK/SSM_Shop/o2o/src/main/resources/dabai.jpeg");
+        InputStream is1 = new FileInputStream(productImg1);
+        File productImg2 = new File("/Volumes/LXK/SSM_Shop/o2o/src/main/resources/xiaohuangren.jpeg");
+        InputStream is2 = new FileInputStream(productImg2);
+        List<ImageHolder> productImgList = new ArrayList<ImageHolder>();
+        productImgList.add(new ImageHolder(productImg1.getName(),is1));
+        productImgList.add(new ImageHolder(productImg2.getName(),is2));
+        //添加商品并验证
+        ProductExecution pe = productService.modifyProduct(product,thumbnail,productImgList);
+        assertEquals(ProductStateEnum.SUCCESS.getState(),pe.getState());
+
+    }
 }

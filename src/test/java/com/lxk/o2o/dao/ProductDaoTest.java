@@ -82,22 +82,25 @@ public class ProductDaoTest extends BaseTest {
 	@Test
 	public void testBQueryProductList() throws Exception {
 		Product product = new Product();
+		//分页查询，预期返回三条结果
 		List<Product> productList = productDao.queryProductList(product, 0, 3);
 		assertEquals(3, productList.size());
+		//查询商品总数
 		int count = productDao.queryProductCount(product);
-		assertEquals(4, count);
+		assertEquals(6, count);
+		//使用商品名称模糊查询，预期返回三条结果
 		product.setProductName("测试");
 		productList = productDao.queryProductList(product, 0, 3);
 		assertEquals(3, productList.size());
-		count = productDao.queryProductCount(product);
+		/*count = productDao.queryProductCount(product);
 		assertEquals(3, count);
 		Shop shop = new Shop();
 		shop.setShopId(2L);
 		product.setShop(shop);
 		productList = productDao.queryProductList(product, 0, 3);
-		assertEquals(1, productList.size());
+		assertEquals(1, productList.size());*/
 		count = productDao.queryProductCount(product);
-		assertEquals(1, count);
+		assertEquals(4, count);
 	}
 
 	@Test
@@ -105,7 +108,7 @@ public class ProductDaoTest extends BaseTest {
 		long productId = 1;
 		ProductImg productImg1 = new ProductImg();
 		productImg1.setImgAddr("图片1");
-		productImg1.setImgDesc("测试图片1");
+		productImg1.setImgDesc("测试图片1111111");
 		productImg1.setPriority(1);
 		productImg1.setCreateTime(new Date());
 		productImg1.setProductId(productId);
@@ -128,10 +131,23 @@ public class ProductDaoTest extends BaseTest {
 	@Test
 	public void testDUpdateProduct() throws Exception {
 		Product product = new Product();
+		ProductCategory pc = new ProductCategory();
+		Shop shop = new Shop();
+		shop.setShopId(1L);
+		pc.setProductCategoryId(2L);
 		product.setProductId(1L);
+		product.setShop(shop);
 		product.setProductName("第一个产品");
+		product.setProductCategory(pc);
 		int effectedNum = productDao.updateProduct(product);
 		assertEquals(1, effectedNum);
+	}
+
+	@Test
+	public void testUpdateProductCategoryToNull(){
+		//将productCategoryId为2的商品类别下面的商品的商品类别置为空
+		int i = productDao.updateProductCategoryToNull(2L);
+		assertEquals(1,i);
 	}
 
 	@Ignore
